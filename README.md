@@ -4,6 +4,18 @@ A $0/month household finance tracker — a Progressive Web App that syncs in rea
 
 ---
 
+## Screenshots
+
+![Login & Dashboard Overview](screenshots/screen-1-2-login-overview.png)
+
+![Transactions & Add Transaction](screenshots/screen-3-4-transactions-add.png)
+
+![Accounts & AI Chat](screenshots/screen-5-6-accounts-chat.png)
+
+![Offline Mode & Savings Tips](screenshots/screen-7-8-offline-savings.png)
+
+---
+
 ## Architecture
 
 ![PocketSync Architecture](architecture.svg)

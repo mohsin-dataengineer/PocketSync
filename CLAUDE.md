@@ -24,21 +24,32 @@ PoketSync/                               ← git root
 ├── CLAUDE.md                       ← YOU ARE HERE
 ├── README.md                       ← Setup guide (Firebase steps, install instructions)
 ├── .gitignore
+├── .env.example                    ← Template for local dev config (safe to commit)
 ├── firebase.json                   ← Firebase Hosting config (serves public/ folder)
 ├── .firebaserc                     ← Firebase project ID (fill in after setup)
 ├── firestore.rules                 ← Security rules — only listed emails can read/write
 ├── firestore.indexes.json          ← Composite indexes for Firestore queries
 │
+├── .github/
+│   └── workflows/deploy.yml        ← GitHub Actions CI/CD — deploys on push to main
+│
 ├── public/                         ← Firebase Hosting root
 │   ├── index.html                  ← THE MAIN APP — single-file PWA
-│   ├── manifest.json               ← PWA install manifest
+│   ├── manifest.json               ← PWA install manifest (includes PNG icons)
 │   ├── sw.js                       ← Service worker (offline support + CDN caching)
+│   ├── mobile_mockup.html          ← Visual design reference — 8 phone screens
 │   └── icons/
-│       └── icon.svg                ← App icon (purple gradient, $ symbol)
+│       ├── icon.svg                ← App icon (purple gradient, $ symbol)
+│       ├── icon-192.png            ← PWA install icon
+│       ├── icon-512.png            ← PWA splash / maskable icon
+│       └── icon-180.png            ← iOS home screen icon
 │
 ├── data/                           ← Sample CSV files (replace with your own)
 │   ├── transactions_sample-01.csv  ← Sample month 1
 │   └── transactions_sample-02.csv  ← Sample month 2
+│
+├── scripts/
+│   └── dev.sh                      ← Local dev helper script
 │
 └── standalone/
     └── finance_dashboard.html      ← Standalone desktop version (no Firebase)
@@ -170,6 +181,12 @@ let donutChart, barChart, timelineChart;  // Chart.js instances (never destroy, 
 let db = null, auth = null;              // Firebase instances
 let firestoreUnsub = null;               // Firestore unsubscribe handle
 let currentUser = null;                  // Firebase Auth user object
+// Mobile state
+let editingTxId = null;                  // non-null when modal is in edit mode
+let currentTabName = 'overview';         // tracks active tab for History API
+let isOnline = navigator.onLine;         // live connectivity flag
+let gesturesInitialized = false;         // prevents double-attach on auth state changes
+const QUEUE_KEY = 'pocketsync_queue';    // localStorage key for offline write queue
 ```
 
 ### The Refresh Pipeline
@@ -216,6 +233,25 @@ parsed.forEach(tx => {
 });
 await batch.commit();
 ```
+
+### Mobile Function Reference
+
+| Function | Purpose |
+|---|---|
+| `showTab(name, skipHistory)` | Switches active tab, pushes `history.pushState`, fires haptic, syncs bottom nav |
+| `vibrate(pattern)` | Wraps `navigator.vibrate` — degrades silently on iOS |
+| `initSwipeGestures()` | Single `touchstart/touchmove/touchend` handler for PTR (vertical) and tab swipe (horizontal) — guarded by `gesturesInitialized` |
+| `initModalDrag()` | Drag-to-dismiss on `.modal-handle`; dismisses at > 120 px or > 0.5 px/ms; snap-back otherwise |
+| `renderQuickAddChips()` | Populates preset amount chips and top-4 category chips in the Add/Edit modal |
+| `triggerRefresh()` | Re-subscribes Firestore listener (Firebase mode) or re-applies filters (local mode) — called by PTR |
+| `updateMonthMiniHeader()` | Auto-detects dominant month in filtered view; called at start of `renderTable()` |
+| `updateChartsForViewport()` | Adjusts chart options (legend position, point radius, tension) for mobile vs desktop |
+| `toggleFilterBar()` | Shows/hides `.filter-row-extras`; called by the filter toggle button |
+| `updateFilterBadge()` | Counts active non-default filters; updates badge text; called by `applyFilters()` |
+| `getOfflineQueue()` | Reads `localStorage[QUEUE_KEY]` → parsed array |
+| `queueTxOffline(tx)` | Appends a transaction to the localStorage queue |
+| `flushOfflineQueue()` | Commits queued writes to Firestore in order; called on reconnect and on every snapshot |
+| `updateQueueBadge()` | Updates the queue count badge in the sync indicator |
 
 ---
 
@@ -274,6 +310,15 @@ All CSS uses variables defined in `:root`:
 | FAB (`#addTxFab`) | `bottom: 80px` on mobile (clears bottom nav) · `bottom: 24px` on desktop |
 | Chat panel | `position: fixed` overlay on mobile · `position: sticky` on desktop |
 | Safe areas | Use `env(safe-area-inset-bottom)` for notched phones (iPhone X+) |
+| Charts | `height: 180px` (donut) / `160px` (bar/timeline) on mobile; legend moves to bottom |
+| Filter bar | `.filter-row-extras` hidden by default on mobile; `display: contents` on desktop to dissolve wrappers back into flex row |
+
+### Touch interaction rules
+- Swipe left/right on `#mainContent` navigates between tabs — guarded against canvas elements (Chart.js)
+- Pull-to-refresh (`#ptrBar`) triggers at 52 px pull depth — vertical movement only
+- PTR and swipe share one unified touch handler in `initSwipeGestures()` — they discriminate by direction
+- Modal drag uses `will-change: transform` for GPU compositing — always reset `transform` and `transition` in `closeAddModal()`
+- All touch listeners on scroll containers use `{ passive: true }`; only the drag touchmove uses `{ passive: false }` (needs `preventDefault`)
 
 ---
 
@@ -301,6 +346,27 @@ All CSS uses variables defined in `:root`:
 ### Toast Notifications (`#toast`)
 - Fixed position, fades in/out
 - `showToast(message, type)` — type is `'success'` or `'error'`
+
+### Pull-to-Refresh Bar (`#ptrBar`)
+- First child of `#mainContent`; `margin: -20px -20px 0` bleeds to edges
+- Height expands via `touchmove` (deltaY × 0.4, capped at 52 px)
+- Hidden on desktop via `@media (min-width: 769px)`
+
+### Month Mini-Header (`#monthMiniHeader`)
+- Inside `#tab-transactions`, above the `.card` table wrapper
+- Shows dominant month of current filtered view (most frequent month by transaction count)
+- Toggled by `updateMonthMiniHeader()` at start of `renderTable()`
+
+### Offline Banner + Queue Badge
+- Yellow `#offlineBanner` shown when `isOnline === false`
+- `.queue-badge` span inside `#syncBadge` shows pending write count
+- `updateQueueBadge()` keeps it in sync with `localStorage[QUEUE_KEY]`
+
+### Quick-Add Chips (`#quickAmountRow`, `#quickCategoryRow`)
+- Rendered inside the Add/Edit modal below the Amount field
+- Amount chips: $10 / $20 / $50 / $100 / $200 / $500 (formatted with `fmtDec`)
+- Category chips: top-4 expense categories by frequency in `TRANSACTIONS`
+- Both rows hidden by default; shown on mobile via `@media (max-width: 768px)` override
 
 ---
 
@@ -356,6 +422,9 @@ Change `"name"` and `"short_name"` in `public/manifest.json` and the `<title>` t
 - **Do not** reference `ALL_TRANSACTIONS` in render logic — always use `TRANSACTIONS`
 - **Do not** hardcode any user names, emails, or account details outside of `USER_CONFIG`
 - **Do not** create separate config files for secrets — Firebase web keys are safe to commit
+- **Do not** add new touch listeners outside `initSwipeGestures()` — they conflict with PTR and swipe; extend that function instead
+- **Do not** call `initSwipeGestures()` more than once — the `gesturesInitialized` guard exists for this; respect it
+- **Do not** reset `modal-sheet` transform or transition anywhere except `closeAddModal()` — drag state must be fully cleared on every close
 
 ---
 
@@ -374,14 +443,26 @@ Change `"name"` and `"short_name"` in `public/manifest.json` and the `<title>` t
 | AI chat — 5 providers | ✅ Done | `sendMessage()` + provider functions |
 | Built-in AI engine | ✅ Done | `answerBuiltIn()` |
 | Dashboard action control via AI | ✅ Done | `executeDashboardAction()` |
-| PWA manifest | ✅ Done | `public/manifest.json` |
+| PWA manifest + PNG icons | ✅ Done | `public/manifest.json`, `public/icons/` |
 | Service worker | ✅ Done | `public/sw.js` |
-| App icon | ✅ Done | `public/icons/icon.svg` |
+| App icon | ✅ Done | `public/icons/icon.svg` + PNG variants |
 | Firebase config files | ✅ Done | `firebase.json`, `.firebaserc`, rules |
-| **`public/index.html` — PWA app** | 🔲 **TODO** | Primary remaining task |
-| Firebase Auth (login screen) | 🔲 TODO | Part of `public/index.html` |
-| Firestore real-time sync | 🔲 TODO | Part of `public/index.html` |
-| Add Transaction modal + FAB | 🔲 TODO | Part of `public/index.html` |
-| Mobile bottom navigation | 🔲 TODO | Part of `public/index.html` |
-| Sync status indicator | 🔲 TODO | Part of `public/index.html` |
-| `USER_CONFIG` — generic user config | 🔲 TODO | Part of `public/index.html` |
+| `public/index.html` — PWA app | ✅ Done | Single-file, self-contained |
+| Firebase Auth (login screen) | ✅ Done | `#loginScreen` — email/password |
+| Firestore real-time sync | ✅ Done | `listenToTransactions()` + `onSnapshot` |
+| Add Transaction modal + FAB | ✅ Done | `#addTxModal`, `#addTxFab`, `saveTx()` |
+| Edit / delete transaction | ✅ Done | `openEditModal()`, `deleteTx()` — inline row actions |
+| Mobile bottom navigation | ✅ Done | `.bottom-nav` — 5 items, synced with `showTab()` |
+| Sync status indicator | ✅ Done | `.sync-badge` with queue count badge |
+| `USER_CONFIG` — generic user config | ✅ Done | Single object near top of `index.html` |
+| Android back-button (History API) | ✅ Done | `pushState` in `showTab()`, `popstate` listener |
+| Haptic feedback | ✅ Done | `vibrate()` utility — silent on iOS |
+| Swipe navigation | ✅ Done | `initSwipeGestures()` — horizontal swipe between tabs |
+| Pull-to-refresh | ✅ Done | `#ptrBar` + `triggerRefresh()` |
+| Collapsible filter bar | ✅ Done | `toggleFilterBar()`, `updateFilterBadge()` |
+| Portrait-optimized charts | ✅ Done | `updateChartsForViewport()` — responsive legend + sizing |
+| Month mini-header | ✅ Done | `updateMonthMiniHeader()` in `renderTable()` |
+| Offline queue | ✅ Done | `queueTxOffline()`, `flushOfflineQueue()`, localStorage |
+| Drag-to-dismiss modal | ✅ Done | `initModalDrag()` — velocity + distance threshold |
+| Quick-add chips | ✅ Done | `renderQuickAddChips()` — amounts + top categories |
+| CI/CD pipeline | ✅ Done | `.github/workflows/deploy.yml` — auto-deploy on push |
