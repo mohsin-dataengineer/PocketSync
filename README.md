@@ -93,45 +93,6 @@ Open [`public/mobile_mockup.html`](public/mobile_mockup.html) in any browser to 
 | **Offline Mode** | Yellow offline banner in header + queue badge showing pending write count |
 | **Savings Tips** | AI-generated savings cards organized by category |
 
-### Mobile enhancement phases
-
-Six phases were applied on top of the base desktop dashboard to produce the mobile experience:
-
-#### Phase 1 — Instant Wins
-- `inputmode="decimal"` on the amount field → native decimal keyboard on iOS and Android
-- History API (`pushState` / `popstate`) → Android hardware back button dismisses modals, then navigates tabs
-- `navigator.vibrate()` haptic feedback on tab switches and destructive actions (degrades silently on iOS)
-- Bottom nav "AI" item opens the chat overlay instead of a separate tab
-
-#### Phase 2 — Touch Gestures & Edit
-- Horizontal swipe on the main content area (`touchstart` / `touchend`) navigates between tabs
-- Per-row edit ✏️ and delete 🗑️ buttons in a mobile-only column (hidden on desktop)
-- `editingTxId` state enables the Add Transaction modal to double as an edit form
-
-#### Phase 3 — Portrait Charts & Collapsible Filters
-- Chart heights reduced to 180 px (donut) / 160 px (bar/timeline) on `≤ 768 px`
-- Donut legend moves to bottom on mobile, right on desktop
-- Filter bar split into always-visible row (toggle + month) and collapsible extras row
-- Filter badge shows `Filters (N)` when non-default filters are active
-- Desktop: `display: contents` on the two wrapper divs dissolves them back into the original flex row
-
-#### Phase 4 — Pull-to-Refresh & Month Mini-Header
-- `#ptrBar` — rubber-band pull indicator at the top of main content; triggers Firestore re-subscribe or local re-filter at 52 px pull depth
-- Month mini-header auto-detects the dominant month in the current filtered view and pins it above the transaction list
-- PTR and left/right swipe share a single unified `touchstart/touchmove/touchend` handler — they discriminate by direction
-
-#### Phase 5 — Offline Queue
-- `window.addEventListener('online' / 'offline')` listeners update `isOnline` state and toggle a yellow banner
-- Writes attempted while offline are serialized to `localStorage` under `pocketsync_queue`
-- `flushOfflineQueue()` runs on reconnect and on every Firestore snapshot — commits queued writes in order
-- Queue badge inside the sync indicator shows pending write count
-
-#### Phase 6 — Drag-to-Dismiss & Quick-Add Chips
-- `will-change: transform` on `.modal-sheet` — GPU-composited drag animation
-- Touch drag on the modal handle → follows finger; dismisses at > 120 px or > 0.5 px/ms velocity; snaps back otherwise
-- Quick-amount chips ($10 / $20 / $50 / $100 / $200 / $500) fill the amount field in one tap
-- Top-4 expense categories by frequency rendered as chips above the category dropdown
-
 ---
 
 ## First-Time Setup
