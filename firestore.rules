@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Only authorized household members can read or write
+    function isAuthorized() {
+      return request.auth != null &&
+             request.auth.token.email in __RULE_EMAILS__;
+    }
+
+    match /transactions/{docId} {
+      allow read, write: if isAuthorized();
+    }
+  }
+}

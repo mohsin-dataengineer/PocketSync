@@ -1,0 +1,44 @@
+name: Deploy to Firebase
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Inject USER_CONFIG into index.html ──────────────────────────────
+      - name: Inject USER_CONFIG
+        env:
+          USER_CONFIG: ${{ secrets.USER_CONFIG }}
+        run: |
+          python3 - <<'PYEOF'
+          import os
+          content = open('public/index.html').read()
+          content = content.replace('__USER_CONFIG__', os.environ['USER_CONFIG'])
+          open('public/index.html', 'w').write(content)
+          PYEOF
+
+      # ── Inject Firestore rule emails ─────────────────────────────────────
+      - name: Inject Firestore rule emails
+        env:
+          RULE_EMAILS: ${{ secrets.RULE_EMAILS }}
+        run: |
+          python3 - <<'PYEOF'
+          import os
+          content = open('firestore.rules').read()
+          content = content.replace('__RULE_EMAILS__', os.environ['RULE_EMAILS'])
+          open('firestore.rules', 'w').write(content)
+          PYEOF
+
+      # ── Deploy to Firebase (Hosting + Firestore rules) ───────────────────
+      - name: Deploy to Firebase
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only hosting,firestore:rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

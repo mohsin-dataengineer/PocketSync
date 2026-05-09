@@ -1,0 +1,31 @@
+date,description,category,account,amount,type
+2026-02-01,EMPLOYER PAYROLL,Income,Checking – Primary,5200.00,income
+2026-02-01,EMPLOYER PAYROLL,Income,Checking – Secondary,3800.00,income
+2026-02-02,COSTCO WHOLESALE,Groceries,Sapphire – Primary,-198.44,expense
+2026-02-03,HULU,Subscriptions,Checking – Primary,-17.99,expense
+2026-02-04,ARCO GAS,Gas & Fuel,Sapphire – Primary,-62.40,expense
+2026-02-05,OLIVE GARDEN,Dining Out,Sapphire – Primary,-55.20,expense
+2026-02-06,AMAZON.COM,Amazon,Discover IT,-245.67,expense
+2026-02-07,URGENT CARE VISIT,Healthcare,Discover IT,-150.00,expense
+2026-02-08,APPLE ONE,Subscriptions,Checking – Primary,-21.95,expense
+2026-02-09,SAFEWAY,Groceries,Sapphire – Primary,-88.32,expense
+2026-02-10,MCDONALD'S,Dining Out,Discover IT,-11.25,expense
+2026-02-11,AT&T WIRELESS,Internet & Phone,Checking – Secondary,-95.00,expense
+2026-02-12,NORDSTROM,Shopping & Retail,Discover IT,-189.50,expense
+2026-02-13,VALENTINES DINNER,Dining Out,Sapphire – Primary,-142.00,expense
+2026-02-14,FLOWERS ONLINE,Shopping & Retail,Sapphire – Primary,-68.00,expense
+2026-02-15,RENT PAYMENT,Housing & Rent,Checking – Primary,-2200.00,expense
+2026-02-16,SHELL GAS STATION,Gas & Fuel,Discover IT,-49.80,expense
+2026-02-17,CHIPOTLE MEXICAN GRILL,Dining Out,Sapphire – Primary,-27.50,expense
+2026-02-18,AMAZON PRIME,Subscriptions,Checking – Primary,-14.99,expense
+2026-02-19,CVS PHARMACY,Healthcare,Discover IT,-35.20,expense
+2026-02-20,LOWES HOME IMPROVEMENT,Shopping & Retail,Sapphire – Primary,-312.45,expense
+2026-02-21,WELLS FARGO ATM,Cash & ATM,Checking – Primary,-300.00,expense
+2026-02-22,TACO BELL,Dining Out,Discover IT,-9.75,expense
+2026-02-23,TRADER JOES,Groceries,Sapphire – Primary,-103.22,expense
+2026-02-24,PROGRESSIVE INSURANCE,Insurance,Checking – Primary,-201.00,expense
+2026-02-25,PELOTON,Subscriptions,Checking – Secondary,-44.00,expense
+2026-02-26,DOORDASH,Dining Out,Sapphire – Primary,-52.10,expense
+2026-02-27,AMAZON.COM,Amazon,Discover IT,-119.98,expense
+2026-02-28,RED CROSS DONATION,Donations & Charity,Checking – Primary,-75.00,expense
+2026-02-28,INTEREST INCOME,Income,Checking – Primary,14.88,income

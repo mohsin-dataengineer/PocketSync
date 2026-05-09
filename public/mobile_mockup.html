@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PocketSync — Mobile Design Mockup</title>
+<style>
+  :root {
+    --bg:       #0f1117;
+    --surface:  #1a1d27;
+    --surface2: #22263a;
+    --border:   #2e3350;
+    --accent:   #6366f1;
+    --accent2:  #8b5cf6;
+    --green:    #10b981;
+    --red:      #ef4444;
+    --yellow:   #f59e0b;
+    --blue:     #3b82f6;
+    --cyan:     #06b6d4;
+    --text:     #e2e8f0;
+    --muted:    #8892a4;
+    --radius:   14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #07090f;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── Page layout ── */
+  .page-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .page-title span { color: var(--text); }
+  .page-subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 48px;
+  }
+
+  .section-label {
+    text-align: center;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 24px;
+    margin-top: 56px;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  .screens-row {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  /* ── Phone frame ── */
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .phone-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .phone-frame {
+    width: 320px;
+    height: 640px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 2px solid #3a3d52;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  /* notch */
+  .phone-frame::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100px; height: 28px;
+    background: #111;
+    border-radius: 0 0 18px 18px;
+    z-index: 999;
+  }
+  .phone-screen {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-top: 28px; /* below notch */
+  }
+
+  /* ── Shared components ── */
+  .phone-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .logo { font-size: 1rem; font-weight: 700; color: var(--accent); }
+  .logo span { color: var(--text); }
+  .sync-badge {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.62rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 20px;
+  }
+  .sync-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .synced { background: rgba(16,185,129,0.15); color: var(--green); }
+  .syncing { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  .sync-dot.pulse { animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* filter bar */
+  .filter-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 10px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .filter-chip {
+    padding: 4px 10px; border-radius: 20px;
+    background: var(--surface2); border: 1px solid var(--border);
+    font-size: 0.65rem; color: var(--text); white-space: nowrap;
+    display: flex; align-items: center; gap: 3px;
+  }
+  .filter-chip.active {
+    background: rgba(99,102,241,0.2); border-color: var(--accent); color: var(--accent);
+  }
+  .filter-toggle-btn {
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    font-size: 0.65rem; color: var(--muted); white-space: nowrap;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  /* bottom nav */
+  .bottom-nav {
+    height: 56px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .nav-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: none; border: none; color: var(--muted);
+    font-size: 0.55rem; padding: 6px 8px; border-radius: 8px;
+    min-width: 44px;
+  }
+  .nav-icon { font-size: 1.1rem; line-height: 1; }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn-add {
+    background: var(--accent); color: white !important; border-radius: 50%;
+    width: 40px; height: 40px; font-size: 1.4rem;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 12px rgba(99,102,241,0.5);
+    min-width: auto;
+    border: none; cursor: pointer;
+  }
+
+  .screen-body {
+    flex: 1; overflow-y: auto; overflow-x: hidden;
+    padding: 12px 12px 8px;
+    display: flex; flex-direction: column; gap: 10px;
+    scrollbar-width: none;
+  }
+  .screen-body::-webkit-scrollbar { display: none; }
+
+  /* KPI grid */
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 10px;
+  }
+  .kpi-label { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .kpi-value { font-size: 1.2rem; font-weight: 700; margin: 3px 0 1px; }
+  .kpi-sub { font-size: 0.6rem; color: var(--muted); }
+  .green { color: var(--green); } .red { color: var(--red); } .blue { color: var(--blue); }
+
+  /* charts */
+  .chart-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px;
+  }
+  .chart-title { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .chart-donut-mock {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: conic-gradient(
+      #6366f1 0% 32%,
+      #10b981 32% 52%,
+      #f59e0b 52% 68%,
+      #3b82f6 68% 82%,
+      #06b6d4 82% 90%,
+      #8b5cf6 90% 100%
+    );
+    margin: 0 auto 10px;
+    position: relative;
+    box-shadow: inset 0 0 0 28px var(--surface);
+  }
+  .chart-legend {
+    display: flex; flex-wrap: wrap; gap: 4px 10px;
+    justify-content: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.58rem; color: var(--muted); }
+  .legend-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .bar-chart-mock { display: flex; flex-direction: column; gap: 5px; }
+  .bar-row { display: flex; align-items: center; gap: 6px; }
+  .bar-label { font-size: 0.6rem; color: var(--muted); width: 54px; text-align: right; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 10px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; background: var(--accent); }
+  .bar-val { font-size: 0.58rem; color: var(--text); width: 32px; flex-shrink: 0; }
+
+  /* timeline mock */
+  .timeline-mock {
+    height: 60px; position: relative; margin-top: 4px;
+  }
+  .timeline-mock svg { width: 100%; height: 100%; }
+
+  /* transaction rows */
+  .tx-list { display: flex; flex-direction: column; gap: 0; }
+  .tx-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .tx-row:last-child { border-bottom: none; }
+  .tx-cat-dot {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+  .tx-info { flex: 1; min-width: 0; }
+  .tx-desc { font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tx-meta { font-size: 0.6rem; color: var(--muted); margin-top: 1px; }
+  .tx-amount { font-size: 0.82rem; font-weight: 700; flex-shrink: 0; }
+  .tx-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .tx-action-btn {
+    width: 26px; height: 26px; border-radius: 6px;
+    border: none; display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; cursor: pointer;
+  }
+  .btn-edit { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .btn-del  { background: rgba(239,68,68,0.15);  color: var(--red); }
+
+  /* month mini header */
+  .month-mini {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 5px 12px; display: flex; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .month-mini-label { font-size: 0.65rem; color: var(--muted); }
+  .month-mini-val { font-size: 0.65rem; color: var(--red); font-weight: 600; }
+
+  /* pull to refresh */
+  .ptr-bar {
+    background: var(--surface2); height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; font-size: 0.65rem; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .ptr-spinner {
+    width: 14px; height: 14px; border: 2px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Modal bottom sheet ── */
+  .modal-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px); z-index: 50;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .modal-sheet {
+    background: var(--surface); border-radius: 20px 20px 0 0;
+    padding: 16px 16px 20px;
+  }
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 14px; }
+  .modal-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; }
+  .modal-field { margin-bottom: 10px; }
+  .modal-field label { display: block; font-size: 0.65rem; color: var(--muted); margin-bottom: 4px; }
+  .modal-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 8px 10px; border-radius: 8px; font-size: 0.82rem;
+  }
+  .modal-input.focused { border-color: var(--accent); }
+  .type-toggle { display: flex; gap: 6px; }
+  .type-btn {
+    flex: 1; padding: 7px; border: 1px solid var(--border);
+    background: none; color: var(--muted); border-radius: 7px; font-size: 0.75rem; text-align: center;
+  }
+  .type-btn.active-expense { background: rgba(239,68,68,0.15); border-color: var(--red); color: var(--red); }
+  .type-btn.active-income { background: rgba(16,185,129,0.15); border-color: var(--green); color: var(--green); }
+  .quick-chips-label { font-size: 0.63rem; color: var(--muted); margin-bottom: 5px; }
+  .quick-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+  .qchip {
+    padding: 4px 10px; border-radius: 20px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-size: 0.7rem; cursor: pointer;
+  }
+  .qchip.cat { color: var(--accent); border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.1); }
+  .modal-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-cancel { flex: 1; padding: 10px; border: 1px solid var(--border); background: none; color: var(--muted); border-radius: 8px; font-size: 0.82rem; }
+  .btn-save { flex: 2; padding: 10px; background: var(--accent); border: none; color: white; border-radius: 8px; font-size: 0.82rem; font-weight: 600; }
+
+  /* numeric keyboard mock */
+  .numkb {
+    background: #1c1f2e; border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; flex-shrink: 0;
+  }
+  .numkb-key {
+    background: var(--surface2); padding: 12px;
+    text-align: center; font-size: 1rem; color: var(--text);
+    font-weight: 500; border: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .numkb-key.dark { background: #161825; }
+  .numkb-key.action { background: var(--accent); color: white; font-size: 0.8rem; font-weight: 700; }
+
+  /* ── Chat overlay ── */
+  .chat-sheet {
+    position: absolute; bottom: 56px; left: 8px; right: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; z-index: 50; overflow: hidden;
+    display: flex; flex-direction: column; max-height: 380px;
+  }
+  .chat-header {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .chat-title { font-weight: 600; font-size: 0.85rem; }
+  .chat-close { background: none; border: none; color: var(--muted); font-size: 1rem; }
+  .chat-provider { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); padding: 3px 6px; border-radius: 5px; font-size: 0.6rem; }
+  .chat-msgs { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: none; }
+  .chat-msgs::-webkit-scrollbar { display: none; }
+  .msg { max-width: 88%; padding: 7px 11px; border-radius: 10px; font-size: 0.75rem; line-height: 1.45; }
+  .msg-bot { align-self: flex-start; background: var(--surface2); border-radius: 10px 10px 10px 2px; }
+  .msg-user { align-self: flex-end; background: var(--accent); color: white; border-radius: 10px 10px 2px 10px; }
+  .chat-input-row {
+    padding: 8px 10px; border-top: 1px solid var(--border);
+    display: flex; gap: 6px; align-items: center; flex-shrink: 0;
+  }
+  .chat-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 7px 10px; border-radius: 20px; font-size: 0.78rem; }
+  .chat-send { width: 30px; height: 30px; background: var(--accent); border: none; color: white; border-radius: 50%; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+
+  /* ── Login screen ── */
+  .login-screen {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 20px 16px; background: var(--bg);
+  }
+  .login-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px 22px; width: 100%;
+  }
+  .login-logo { font-size: 1.5rem; font-weight: 800; color: var(--accent); text-align: center; margin-bottom: 4px; }
+  .login-logo span { color: var(--text); }
+  .login-sub { text-align: center; color: var(--muted); font-size: 0.72rem; margin-bottom: 22px; }
+  .login-field { margin-bottom: 12px; }
+  .login-field label { display: block; font-size: 0.65rem; color: var(--muted); margin-bottom: 4px; }
+  .login-field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 9px; font-size: 0.85rem; }
+  .login-field input.focused { border-color: var(--accent); }
+  .btn-signin { width: 100%; background: var(--accent); border: none; color: white; padding: 11px; border-radius: 9px; font-size: 0.9rem; font-weight: 600; margin-top: 6px; }
+  .login-footer { text-align: center; font-size: 0.62rem; color: var(--muted); margin-top: 14px; }
+
+  /* ── Accounts tab ── */
+  .account-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px;
+    margin-bottom: 8px;
+  }
+  .account-name { font-weight: 600; font-size: 0.85rem; margin-bottom: 2px; }
+  .account-bank { font-size: 0.65rem; color: var(--muted); margin-bottom: 10px; }
+  .account-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .acct-stat { padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .acct-stat:nth-child(odd) { padding-right: 10px; border-right: 1px solid var(--border); }
+  .acct-stat:nth-last-child(-n+2) { border-bottom: none; }
+  .acct-stat-label { font-size: 0.6rem; color: var(--muted); }
+  .acct-stat-val { font-size: 0.85rem; font-weight: 600; }
+  .credit-bar-track { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+  .credit-bar-fill { height: 100%; border-radius: 3px; background: var(--yellow); width: 42%; }
+
+  /* savings tab */
+  .savings-tip {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 12px;
+    padding: 12px; margin-bottom: 8px;
+  }
+  .savings-tip h4 { font-size: 0.82rem; margin-bottom: 5px; }
+  .savings-tip p { font-size: 0.72rem; color: var(--muted); line-height: 1.45; }
+  .savings-amount { font-size: 0.88rem; font-weight: 700; color: var(--green); margin-top: 7px; }
+
+  /* FAB */
+  .fab {
+    position: absolute; right: 14px; bottom: 64px;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--accent); border: none; color: white;
+    font-size: 1.6rem; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.5);
+    z-index: 20;
+  }
+
+  /* ── Phase tags ── */
+  .phase-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 20px;
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    background: rgba(99,102,241,0.2); color: var(--accent); border: 1px solid rgba(99,102,241,0.3);
+    margin-bottom: 6px;
+  }
+  .phase-tag.p2 { background: rgba(16,185,129,0.15); color: var(--green); border-color: rgba(16,185,129,0.3); }
+  .phase-tag.p3 { background: rgba(245,158,11,0.15); color: var(--yellow); border-color: rgba(245,158,11,0.3); }
+  .phase-tag.p4 { background: rgba(59,130,246,0.15); color: var(--blue); border-color: rgba(59,130,246,0.3); }
+  .phase-tag.p6 { background: rgba(139,92,246,0.15); color: var(--accent2); border-color: rgba(139,92,246,0.3); }
+
+  /* annotation callouts */
+  .callout-list {
+    max-width: 320px;
+    margin-top: 12px;
+  }
+  .callout {
+    display: flex; align-items: flex-start; gap: 7px;
+    margin-bottom: 7px;
+  }
+  .callout-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent); color: white;
+    font-size: 0.6rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .callout-dot.green { background: var(--green); }
+  .callout-dot.yellow { background: var(--yellow); }
+  .callout-dot.blue { background: var(--blue); }
+  .callout-dot.purple { background: var(--accent2); }
+  .callout-text { font-size: 0.68rem; color: var(--muted); line-height: 1.45; }
+  .callout-text strong { color: var(--text); }
+
+  /* divider */
+  .divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 60px 0 40px;
+  }
+
+  /* highlight ring */
+  .highlight { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  .highlight-green { outline: 2px solid var(--green); outline-offset: 2px; border-radius: 6px; }
+  .highlight-yellow { outline: 2px solid var(--yellow); outline-offset: 2px; border-radius: 6px; }
+
+</style>
+</head>
+<body>
+
+<div class="page-title">Pocket<span>Sync</span></div>
+<div class="page-subtitle">Mobile Design Mockup — All Enhancement Phases</div>
+
+<!-- ════════════════════════════════════════ -->
+<!--  ROW 1 — Login + Overview (Phase 1–4)  -->
+<!-- ════════════════════════════════════════ -->
+<div class="section-label">Screen 1 &amp; 2 — Login &amp; Dashboard Overview</div>
+<div class="screens-row">
+
+  <!-- ── SCREEN 1: Login ── -->
+  <div class="phone-wrap">
+    <div class="phase-tag">Login Screen</div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="login-screen">
+          <div class="login-card">
+            <div class="login-logo">Pocket<span>Sync</span></div>
+            <div class="login-sub">Sign in to sync your household finances</div>
+            <div class="login-field">
+              <label>Email</label>
+              <input type="text" value="member1@example.com" readonly>
+            </div>
+            <div class="login-field">
+              <label>Password</label>
+              <input type="password" class="focused" value="••••••••" readonly>
+            </div>
+            <button class="btn-signin">Sign In</button>
+            <div class="login-footer">Accounts managed in Firebase Console</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-list">
+      <div class="callout">
+        <div class="callout-dot">1</div>
+        <div class="callout-text"><strong>Firebase auth</strong> — email/password only, no sign-up UI</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot">2</div>
+        <div class="callout-text">Autocomplete hints for <strong>email + password</strong> fields</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 2: Overview Dashboard ── -->
+  <div class="phone-wrap">
+    <div class="phase-tag">Overview Tab</div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <!-- header -->
+        <div class="phone-header">
+          <div class="logo">Pocket<span>Sync</span></div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="sync-badge synced"><div class="sync-dot"></div>Synced</div>
+          </div>
+        </div>
+        <!-- filter bar — collapsed (Phase 3) -->
+        <div class="filter-bar highlight-yellow">
+          <div class="filter-toggle-btn">⚙ Filters <span style="color:var(--accent);margin-left:2px">(1)</span></div>
+          <div class="filter-chip active">📅 May 2026</div>
+          <div class="filter-chip">All members</div>
+        </div>
+        <!-- main body -->
+        <div class="screen-body">
+          <!-- KPIs -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Expenses</div>
+              <div class="kpi-value red">$3,214</div>
+              <div class="kpi-sub">↑ 8% vs Apr</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Income</div>
+              <div class="kpi-value green">$7,500</div>
+              <div class="kpi-sub">2 sources</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Net Savings</div>
+              <div class="kpi-value blue">$4,286</div>
+              <div class="kpi-sub">57% saved</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Top Category</div>
+              <div class="kpi-value" style="font-size:0.9rem;color:var(--text)">🛒 Groceries</div>
+              <div class="kpi-sub">$642 this month</div>
+            </div>
+          </div>
+          <!-- Donut chart (portrait-optimized, Phase 3) -->
+          <div class="chart-card highlight-yellow">
+            <div class="chart-title">Category Breakdown</div>
+            <div class="chart-donut-mock"></div>
+            <!-- legend bottom (Phase 3 fix) -->
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div>Groceries</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Dining</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Housing</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Utilities</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>Subs</div>
+            </div>
+          </div>
+          <!-- Bar chart -->
+          <div class="chart-card">
+            <div class="chart-title">Top Categories</div>
+            <div class="bar-chart-mock">
+              <div class="bar-row"><div class="bar-label">Groceries</div><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><div class="bar-val">$642</div></div>
+              <div class="bar-row"><div class="bar-label">Housing</div><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--yellow)"></div></div><div class="bar-val">$540</div></div>
+              <div class="bar-row"><div class="bar-label">Dining Out</div><div class="bar-track"><div class="bar-fill" style="width:54%;background:var(--green)"></div></div><div class="bar-val">$408</div></div>
+              <div class="bar-row"><div class="bar-label">Amazon</div><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--cyan)"></div></div><div class="bar-val">$285</div></div>
+            </div>
+          </div>
+          <!-- Timeline chart mock -->
+          <div class="chart-card">
+            <div class="chart-title">Monthly Trend</div>
+            <div class="timeline-mock">
+              <svg viewBox="0 0 280 60" preserveAspectRatio="none">
+                <polyline points="0,45 46,38 92,50 138,30 184,42 230,22 280,28"
+                  fill="none" stroke="#6366f1" stroke-width="2" stroke-linejoin="round"/>
+                <polyline points="0,45 46,38 92,50 138,30 184,42 230,22 280,28"
+                  fill="rgba(99,102,241,0.12)" stroke="none"
+                  points="0,45 46,38 92,50 138,30 184,42 230,22 280,28 280,60 0,60"/>
+                <polyline points="0,55 46,50 92,52 138,48 184,50 230,46 280,44"
+                  fill="none" stroke="#10b981" stroke-width="2" stroke-linejoin="round" stroke-dasharray="4,2"/>
+              </svg>
+            </div>
+            <div style="display:flex;gap:12px;justify-content:center;margin-top:4px">
+              <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div>Expenses</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Income</div>
+            </div>
+          </div>
+        </div>
+        <!-- bottom nav — Phase 1: AI tab added -->
+        <div class="bottom-nav highlight">
+          <button class="nav-btn active"><div class="nav-icon">📊</div>Overview</button>
+          <button class="nav-btn"><div class="nav-icon">📋</div>Txns</button>
+          <button class="nav-btn-add">+</button>
+          <button class="nav-btn"><div class="nav-icon">🏦</div>Accounts</button>
+          <button class="nav-btn"><div class="nav-icon">💬</div>AI</button>
+        </div>
+      </div>
+    </div>
+    <div class="callout-list">
+      <div class="callout">
+        <div class="callout-dot">1</div>
+        <div class="callout-text"><strong>Phase 1:</strong> "AI" replaces "Savings" in bottom nav — opens chat overlay</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot yellow">2</div>
+        <div class="callout-text"><strong>Phase 3:</strong> Filter bar collapsed to 1 row — shows active filter count badge</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot yellow">3</div>
+        <div class="callout-text"><strong>Phase 3:</strong> Donut legend moved to <em>bottom</em> for portrait width</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<hr class="divider">
+
+<!-- ════════════════════════════════════════ -->
+<!--  ROW 2 — Transactions + Add Modal      -->
+<!-- ════════════════════════════════════════ -->
+<div class="section-label">Screen 3 &amp; 4 — Transactions &amp; Add Transaction</div>
+<div class="screens-row">
+
+  <!-- ── SCREEN 3: Transactions ── -->
+  <div class="phone-wrap">
+    <div class="phase-tag p2">Transactions Tab</div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-header">
+          <div class="logo">Pocket<span>Sync</span></div>
+          <div class="sync-badge synced"><div class="sync-dot"></div>Synced</div>
+        </div>
+        <!-- pull to refresh indicator (Phase 4) -->
+        <div class="ptr-bar highlight-yellow">
+          <div class="ptr-spinner"></div>
+          <span>Refreshing transactions…</span>
+        </div>
+        <!-- filter bar collapsed -->
+        <div class="filter-bar">
+          <div class="filter-toggle-btn">⚙ Filters</div>
+          <div class="filter-chip active">📅 May 2026</div>
+          <div class="filter-chip">Expenses</div>
+        </div>
+        <!-- sticky month mini-header (Phase 4) -->
+        <div class="month-mini highlight-yellow">
+          <div class="month-mini-label">May 2026 · 24 transactions</div>
+          <div class="month-mini-val">−$3,214.50</div>
+        </div>
+        <!-- transaction list -->
+        <div class="screen-body" style="padding-top:6px">
+          <div class="tx-list">
+
+            <div class="tx-row">
+              <div class="tx-cat-dot" style="background:rgba(16,185,129,0.15);color:var(--green)">🛒</div>
+              <div class="tx-info">
+                <div class="tx-desc">Whole Foods Market</div>
+                <div class="tx-meta">May 8 · Groceries · Chase Sapphire</div>
+              </div>
+              <div class="tx-amount red">−$74.80</div>
+              <div class="tx-actions highlight">
+                <button class="tx-action-btn btn-edit">✏</button>
+                <button class="tx-action-btn btn-del">🗑</button>
+              </div>
+            </div>
+
+            <div class="tx-row">
+              <div class="tx-cat-dot" style="background:rgba(245,158,11,0.15);color:var(--yellow)">🍕</div>
+              <div class="tx-info">
+                <div class="tx-desc">Chipotle Mexican Grill</div>
+                <div class="tx-meta">May 7 · Dining Out · Discover IT</div>
+              </div>
+              <div class="tx-amount red">−$28.40</div>
+              <div class="tx-actions">
+                <button class="tx-action-btn btn-edit">✏</button>
+                <button class="tx-action-btn btn-del">🗑</button>
+              </div>
+            </div>
+
+            <div class="tx-row">
+              <div class="tx-cat-dot" style="background:rgba(99,102,241,0.15);color:var(--accent)">💼</div>
+              <div class="tx-info">
+                <div class="tx-desc">Employer Payroll</div>
+                <div class="tx-meta">May 1 · Income · BoA Checking</div>
+              </div>
+              <div class="tx-amount green">+$5,000.00</div>
+              <div class="tx-actions">
+                <button class="tx-action-btn btn-edit">✏</button>
+                <button class="tx-action-btn btn-del">🗑</button>
+              </div>
+            </div>
+
+            <div class="tx-row">
+              <div class="tx-cat-dot" style="background:rgba(59,130,246,0.15);color:var(--blue)">📦</div>
+              <div class="tx-info">
+                <div class="tx-desc">Amazon Prime</div>
+                <div class="tx-meta">May 6 · Subscriptions · Chase</div>
+              </div>
+              <div class="tx-amount red">−$14.99</div>
+              <div class="tx-actions">
+                <button class="tx-action-btn btn-edit">✏</button>
+                <button class="tx-action-btn btn-del">🗑</button>
+              </div>
+            </div>
+
+            <div class="tx-row">
+              <div class="tx-cat-dot" style="background:rgba(6,182,212,0.15);color:var(--cyan)">⚡</div>
+              <div class="tx-info">
+                <div class="tx-desc">PG&amp;E Electric Bill</div>
+                <div class="tx-meta">May 5 · Utilities · BoA Checking</div>
+              </div>
+              <div class="tx-amount red">−$128.00</div>
+              <div class="tx-actions">
+                <button class="tx-action-btn btn-edit">✏</button>
+                <button class="tx-action-btn btn-del">🗑</button>
+              </div>
+            </div>
+
+            <div class="tx-row">
+              <div class="tx-cat-dot" style="background:rgba(239,68,68,0.15);color:var(--red)">🏠</div>
+              <div class="tx-info">
+                <div class="tx-desc">Rent Payment</div>
+                <div class="tx-meta">May 1 · Housing · BoA Checking</div>
+              </div>
+              <div class="tx-amount red">−$2,400.00</div>
+              <div class="tx-actions">
+                <button class="tx-action-btn btn-edit">✏</button>
+                <button class="tx-action-btn btn-del">🗑</button>
+              </div>
+            </div>
+
+          </div>
+          <!-- pagination -->
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:0.65rem;color:var(--muted)">
+            <span>Showing 1–6 of 24</span>
+            <div style="display:flex;gap:4px">
+              <button style="padding:3px 8px;border:1px solid var(--border);border-radius:5px;background:var(--accent);color:white;font-size:0.65rem">1</button>
+              <button style="padding:3px 8px;border:1px solid var(--border);border-radius:5px;background:none;color:var(--text);font-size:0.65rem">2</button>
+              <button style="padding:3px 8px;border:1px solid var(--border);border-radius:5px;background:none;color:var(--text);font-size:0.65rem">3 →</button>
+            </div>
+          </div>
+        </div>
+        <!-- FAB -->
+        <button class="fab">+</button>
+        <div class="bottom-nav">
+          <button class="nav-btn"><div class="nav-icon">📊</div>Overview</button>
+          <button class="nav-btn active"><div class="nav-icon">📋</div>Txns</button>
+          <button class="nav-btn-add">+</button>
+          <button class="nav-btn"><div class="nav-icon">🏦</div>Accounts</button>
+          <button class="nav-btn"><div class="nav-icon">💬</div>AI</button>
+        </div>
+      </div>
+    </div>
+    <div class="callout-list">
+      <div class="callout">
+        <div class="callout-dot green">1</div>
+        <div class="callout-text"><strong>Phase 2:</strong> Edit ✏ + Delete 🗑 action buttons per row (mobile-only column)</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot yellow">2</div>
+        <div class="callout-text"><strong>Phase 4:</strong> Pull-to-refresh spinner animates at top when dragged down</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot blue">3</div>
+        <div class="callout-text"><strong>Phase 4:</strong> Sticky mini-header shows month total while scrolling</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 4: Add Transaction Modal ── -->
+  <div class="phone-wrap">
+    <div class="phase-tag p6">Add Transaction Sheet</div>
+    <div class="phone-frame">
+      <div class="phone-screen" style="position:relative">
+        <!-- app behind overlay -->
+        <div class="phone-header" style="filter:blur(1px);opacity:0.4">
+          <div class="logo">Pocket<span>Sync</span></div>
+        </div>
+        <!-- modal overlay -->
+        <div class="modal-overlay">
+          <div class="modal-sheet">
+            <!-- drag handle (Phase 6) -->
+            <div class="modal-handle highlight"></div>
+            <div class="modal-title">Add Transaction</div>
+
+            <div class="modal-field">
+              <label>Date</label>
+              <div class="modal-input" style="color:var(--text);padding:8px 10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);font-size:0.82rem">May 8, 2026</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div class="modal-field">
+                <label>Amount</label>
+                <!-- Phase 1: inputmode="decimal" -->
+                <div class="modal-input focused highlight" style="border-color:var(--accent)">$74.80</div>
+              </div>
+              <div class="modal-field">
+                <label>Type</label>
+                <div class="type-toggle">
+                  <div class="type-btn active-expense">Expense</div>
+                  <div class="type-btn">Income</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick amount chips (Phase 6) -->
+            <div class="highlight-yellow" style="margin-bottom:10px;padding:4px 2px;border-radius:8px">
+              <div class="quick-chips-label">Quick Amounts</div>
+              <div class="quick-chips">
+                <div class="qchip">$10</div>
+                <div class="qchip">$20</div>
+                <div class="qchip">$50</div>
+                <div class="qchip">$100</div>
+                <div class="qchip">$200</div>
+              </div>
+            </div>
+
+            <div class="modal-field">
+              <label>Description</label>
+              <div class="modal-input">Whole Foods Market</div>
+            </div>
+
+            <div class="modal-field">
+              <label>Category</label>
+              <div class="modal-input" style="color:var(--text)">🛒 Groceries</div>
+            </div>
+
+            <!-- Quick category chips (Phase 6) -->
+            <div class="highlight-yellow" style="margin-bottom:10px;padding:4px 2px;border-radius:8px">
+              <div class="quick-chips-label">Recent Categories</div>
+              <div class="quick-chips">
+                <div class="qchip cat">🛒 Groceries</div>
+                <div class="qchip cat">🍕 Dining Out</div>
+                <div class="qchip cat">📦 Amazon</div>
+                <div class="qchip cat">⚡ Utilities</div>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button class="btn-cancel">Cancel</button>
+              <button class="btn-save">Save Transaction</button>
+            </div>
+          </div>
+          <!-- numeric decimal keyboard (Phase 1) -->
+          <div class="numkb highlight">
+            <div class="numkb-key">1</div><div class="numkb-key">2</div><div class="numkb-key">3</div>
+            <div class="numkb-key">4</div><div class="numkb-key">5</div><div class="numkb-key">6</div>
+            <div class="numkb-key">7</div><div class="numkb-key">8</div><div class="numkb-key">9</div>
+            <div class="numkb-key dark">.</div><div class="numkb-key">0</div><div class="numkb-key dark" style="font-size:1.2rem">⌫</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout-list">
+      <div class="callout">
+        <div class="callout-dot">1</div>
+        <div class="callout-text"><strong>Phase 1:</strong> `inputmode="decimal"` — decimal numpad appears automatically for Amount</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot purple">2</div>
+        <div class="callout-text"><strong>Phase 6:</strong> Draggable handle — pull down 120px to dismiss sheet</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot yellow">3</div>
+        <div class="callout-text"><strong>Phase 6:</strong> Quick amounts ($10–$200) and recent category chips for fast entry</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<hr class="divider">
+
+<!-- ════════════════════════════════════════ -->
+<!--  ROW 3 — Accounts + AI Chat            -->
+<!-- ════════════════════════════════════════ -->
+<div class="section-label">Screen 5 &amp; 6 — Accounts &amp; AI Chat</div>
+<div class="screens-row">
+
+  <!-- ── SCREEN 5: Accounts ── -->
+  <div class="phone-wrap">
+    <div class="phase-tag">Accounts Tab</div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-header">
+          <div class="logo">Pocket<span>Sync</span></div>
+          <div class="sync-badge synced"><div class="sync-dot"></div>Synced</div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-chip active">All Members</div>
+          <div class="filter-chip">All Types</div>
+        </div>
+        <div class="screen-body">
+
+          <div class="account-card">
+            <div class="account-name">Checking – Primary</div>
+            <div class="account-bank">Bank of America · Member 1</div>
+            <div class="account-stats">
+              <div class="acct-stat">
+                <div class="acct-stat-label">Expenses</div>
+                <div class="acct-stat-val red">$2,528</div>
+              </div>
+              <div class="acct-stat" style="padding-left:10px">
+                <div class="acct-stat-label">Income</div>
+                <div class="acct-stat-val green">$5,000</div>
+              </div>
+              <div class="acct-stat">
+                <div class="acct-stat-label">Net</div>
+                <div class="acct-stat-val green">+$2,472</div>
+              </div>
+              <div class="acct-stat" style="padding-left:10px">
+                <div class="acct-stat-label">Transactions</div>
+                <div class="acct-stat-val">14</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="account-card">
+            <div class="account-name">Sapphire – Primary</div>
+            <div class="account-bank">Chase · Credit Card · Member 1</div>
+            <div class="account-stats">
+              <div class="acct-stat">
+                <div class="acct-stat-label">Spent</div>
+                <div class="acct-stat-val red">$1,240</div>
+              </div>
+              <div class="acct-stat" style="padding-left:10px">
+                <div class="acct-stat-label">Limit</div>
+                <div class="acct-stat-val">$10,000</div>
+              </div>
+            </div>
+            <div style="font-size:0.62rem;color:var(--muted);margin-top:8px">Credit Utilization — 12%</div>
+            <div class="credit-bar-track"><div class="credit-bar-fill" style="width:12%;background:var(--green)"></div></div>
+          </div>
+
+          <div class="account-card">
+            <div class="account-name">Discover IT</div>
+            <div class="account-bank">Discover · Credit Card · Member 2</div>
+            <div class="account-stats">
+              <div class="acct-stat">
+                <div class="acct-stat-label">Spent</div>
+                <div class="acct-stat-val red">$686</div>
+              </div>
+              <div class="acct-stat" style="padding-left:10px">
+                <div class="acct-stat-label">Limit</div>
+                <div class="acct-stat-val">$5,000</div>
+              </div>
+            </div>
+            <div style="font-size:0.62rem;color:var(--muted);margin-top:8px">Credit Utilization — 42% ⚠</div>
+            <div class="credit-bar-track"><div class="credit-bar-fill"></div></div>
+          </div>
+
+        </div>
+        <div class="bottom-nav">
+          <button class="nav-btn"><div class="nav-icon">📊</div>Overview</button>
+          <button class="nav-btn"><div class="nav-icon">📋</div>Txns</button>
+          <button class="nav-btn-add">+</button>
+          <button class="nav-btn active"><div class="nav-icon">🏦</div>Accounts</button>
+          <button class="nav-btn"><div class="nav-icon">💬</div>AI</button>
+        </div>
+      </div>
+    </div>
+    <div class="callout-list">
+      <div class="callout">
+        <div class="callout-dot">1</div>
+        <div class="callout-text">2-column stat grid per account card — compact for mobile</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot yellow">2</div>
+        <div class="callout-text">Credit utilization bar — yellow warning at &gt;40%, green when healthy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 6: AI Chat ── -->
+  <div class="phone-wrap">
+    <div class="phase-tag">AI Chat Overlay</div>
+    <div class="phone-frame">
+      <div class="phone-screen" style="position:relative">
+        <!-- background overview tab -->
+        <div class="phone-header" style="opacity:0.35">
+          <div class="logo">Pocket<span>Sync</span></div>
+        </div>
+        <div style="padding:10px;opacity:0.25;flex:1">
+          <div class="kpi-grid" style="margin-bottom:8px">
+            <div class="kpi-card"><div class="kpi-label">Expenses</div><div class="kpi-value red">$3,214</div></div>
+            <div class="kpi-card"><div class="kpi-label">Income</div><div class="kpi-value green">$7,500</div></div>
+          </div>
+        </div>
+        <!-- dark overlay -->
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);z-index:40"></div>
+        <!-- chat float panel (Phase 1 — now reachable from nav) -->
+        <div class="chat-sheet" style="z-index:50">
+          <div class="chat-header">
+            <div class="chat-title">💬 AI Assistant</div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <select class="chat-provider"><option>Built-in</option><option>Gemini</option></select>
+              <button class="chat-close">✕</button>
+            </div>
+          </div>
+          <div class="chat-msgs">
+            <div class="msg msg-bot">Hi! I can analyze your spending data. Ask me anything about your finances 📊</div>
+            <div class="msg msg-user">What did I spend most on this month?</div>
+            <div class="msg msg-bot">Your top spending category in May 2026 is <strong>Groceries at $642</strong> — 20% of total expenses. Dining Out is second at $408. Want me to filter the dashboard to show groceries only?</div>
+            <div class="msg msg-user">Yes show me groceries</div>
+            <div class="msg msg-bot" style="opacity:0.6;font-style:italic">Thinking…</div>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" placeholder="Ask about your spending…" type="text">
+            <button class="chat-send">↑</button>
+          </div>
+        </div>
+        <!-- bottom nav with AI active -->
+        <div class="bottom-nav" style="position:absolute;bottom:0;left:0;right:0;z-index:60">
+          <button class="nav-btn"><div class="nav-icon">📊</div>Overview</button>
+          <button class="nav-btn"><div class="nav-icon">📋</div>Txns</button>
+          <button class="nav-btn-add">+</button>
+          <button class="nav-btn"><div class="nav-icon">🏦</div>Accounts</button>
+          <button class="nav-btn active highlight"><div class="nav-icon">💬</div>AI</button>
+        </div>
+      </div>
+    </div>
+    <div class="callout-list">
+      <div class="callout">
+        <div class="callout-dot">1</div>
+        <div class="callout-text"><strong>Phase 1:</strong> "AI" tab in bottom nav directly opens this overlay — was inaccessible before</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot">2</div>
+        <div class="callout-text">Provider selector (Built-in / Gemini / Groq / Claude) in the header</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot green">3</div>
+        <div class="callout-text">AI can respond with dashboard actions to filter/navigate automatically</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<hr class="divider">
+
+<!-- ════════════════════════════════════════ -->
+<!--  ROW 4 — Offline Queue + Savings       -->
+<!-- ════════════════════════════════════════ -->
+<div class="section-label">Screen 7 &amp; 8 — Offline Queue Indicator &amp; Savings Tab</div>
+<div class="screens-row">
+
+  <!-- ── SCREEN 7: Offline indicator ── -->
+  <div class="phone-wrap">
+    <div class="phase-tag p4">Offline Mode (Phase 5)</div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-header">
+          <div class="logo">Pocket<span>Sync</span></div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <!-- offline queued badge -->
+            <div class="sync-badge syncing highlight"><div class="sync-dot pulse"></div>2 queued</div>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-toggle-btn">⚙ Filters</div>
+          <div class="filter-chip active">📅 May 2026</div>
+        </div>
+        <!-- offline toast -->
+        <div style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:10px;margin:10px 12px 0;padding:10px 12px;display:flex;align-items:center;gap:8px;font-size:0.72rem;color:var(--red);flex-shrink:0">
+          <span style="font-size:1rem">✈️</span>
+          <div>
+            <strong>You're offline</strong><br>
+            <span style="color:var(--muted)">2 transactions queued — will sync when connected</span>
+          </div>
+        </div>
+        <div class="screen-body">
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-label">Expenses</div><div class="kpi-value red">$3,214</div><div class="kpi-sub">↑ 8% vs Apr</div></div>
+            <div class="kpi-card"><div class="kpi-label">Income</div><div class="kpi-value green">$7,500</div><div class="kpi-sub">2 sources</div></div>
+            <div class="kpi-card"><div class="kpi-label">Net Savings</div><div class="kpi-value blue">$4,286</div><div class="kpi-sub">57% saved</div></div>
+            <div class="kpi-card">
+              <div class="kpi-label">Queued</div>
+              <div class="kpi-value" style="font-size:1rem;color:var(--yellow)">⏳ 2 txns</div>
+              <div class="kpi-sub">Pending sync</div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Category Breakdown</div>
+            <div class="chart-donut-mock"></div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <button class="nav-btn active"><div class="nav-icon">📊</div>Overview</button>
+          <button class="nav-btn"><div class="nav-icon">📋</div>Txns</button>
+          <button class="nav-btn-add">+</button>
+          <button class="nav-btn"><div class="nav-icon">🏦</div>Accounts</button>
+          <button class="nav-btn"><div class="nav-icon">💬</div>AI</button>
+        </div>
+      </div>
+    </div>
+    <div class="callout-list">
+      <div class="callout">
+        <div class="callout-dot yellow">1</div>
+        <div class="callout-text"><strong>Phase 5:</strong> Sync badge changes to "2 queued" in yellow — transactions saved to localStorage</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot">2</div>
+        <div class="callout-text">Offline banner appears below header — queued count shown in KPIs</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot green">3</div>
+        <div class="callout-text">Auto-flushes and badge clears when device comes back online</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 8: Savings / AI Tips ── -->
+  <div class="phone-wrap">
+    <div class="phase-tag">Savings Tips Tab</div>
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-header">
+          <div class="logo">Pocket<span>Sync</span></div>
+          <div class="sync-badge synced"><div class="sync-dot"></div>Synced</div>
+        </div>
+        <div style="padding:10px 12px;font-size:0.72rem;color:var(--muted);border-bottom:1px solid var(--border);flex-shrink:0">
+          Based on May 2026 · $3,214 in expenses
+        </div>
+        <div class="screen-body">
+
+          <div class="savings-tip">
+            <h4>🍕 Reduce Dining Out</h4>
+            <p>You spent $408 dining out this month — 54% above your 3-month average of $265. Cooking at home 2 more nights per week could save this amount.</p>
+            <div class="savings-amount">↓ Save ~$143/month</div>
+          </div>
+
+          <div class="savings-tip" style="border-left-color:var(--yellow)">
+            <h4>📺 Subscription Audit</h4>
+            <p>5 active subscriptions detected totaling $67/month. Netflix, Spotify, and Hulu overlap — consider bundling or canceling one.</p>
+            <div class="savings-amount" style="color:var(--yellow)">↓ Save ~$25/month</div>
+          </div>
+
+          <div class="savings-tip" style="border-left-color:var(--green)">
+            <h4>📦 Amazon Spending</h4>
+            <p>$285 on Amazon this month across 8 orders. A 24-hour cart rule could reduce impulse purchases by an estimated 30%.</p>
+            <div class="savings-amount">↓ Save ~$85/month</div>
+          </div>
+
+          <div class="savings-tip" style="border-left-color:var(--blue)">
+            <h4>⛽ Gas Optimization</h4>
+            <p>Gas spending is $180, which is 12% higher than last month. GasBuddy shows stations nearby are $0.18 cheaper per gallon.</p>
+            <div class="savings-amount">↓ Save ~$22/month</div>
+          </div>
+
+        </div>
+        <div class="bottom-nav">
+          <button class="nav-btn"><div class="nav-icon">📊</div>Overview</button>
+          <button class="nav-btn"><div class="nav-icon">📋</div>Txns</button>
+          <button class="nav-btn-add">+</button>
+          <button class="nav-btn"><div class="nav-icon">🏦</div>Accounts</button>
+          <button class="nav-btn"><div class="nav-icon">💬</div>AI</button>
+        </div>
+      </div>
+    </div>
+    <div class="callout-list">
+      <div class="callout">
+        <div class="callout-dot">1</div>
+        <div class="callout-text">AI-generated tips with colored left-border per severity</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot green">2</div>
+        <div class="callout-text">Potential savings amounts highlighted in green</div>
+      </div>
+      <div class="callout">
+        <div class="callout-dot">3</div>
+        <div class="callout-text">Context subtitle shows which month and total expenses tips are based on</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- legend footer -->
+<div style="text-align:center;margin-top:60px;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);max-width:700px;margin-left:auto;margin-right:auto">
+  <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px">Phase Legend</div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
+    <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem"><span class="phase-tag" style="margin:0">Phase 1</span>Instant Wins — inputmode, back button, chat nav, haptic, Escape key</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem"><span class="phase-tag p2" style="margin:0">Phase 2</span>Touch Gestures — swipe tabs, edit/delete actions</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem"><span class="phase-tag p3" style="margin:0">Phase 3</span>Charts + Filter Bar — portrait sizing, collapsible filters</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem"><span class="phase-tag p4" style="margin:0">Phase 4</span>Pull-to-Refresh + Mini-Header</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem"><span class="phase-tag" style="background:rgba(239,68,68,0.12);color:var(--red);border-color:rgba(239,68,68,0.3);margin:0">Phase 5</span>Offline Queue — localStorage + auto-flush</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:0.72rem"><span class="phase-tag p6" style="margin:0">Phase 6</span>Drag-to-Dismiss + Quick-Add Chips</div>
+  </div>
+  <div style="margin-top:16px;font-size:0.68rem;color:var(--muted)">
+    Highlighted elements (colored outlines) show specific changes per phase
+  </div>
+</div>
+
+</body>
+</html>
