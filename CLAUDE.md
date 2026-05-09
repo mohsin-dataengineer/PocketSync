@@ -42,7 +42,15 @@ PoketSync/                               ← git root
 │       ├── icon.svg                ← App icon (purple gradient, $ symbol)
 │       ├── icon-192.png            ← PWA install icon
 │       ├── icon-512.png            ← PWA splash / maskable icon
-│       └── icon-180.png            ← iOS home screen icon
+│       ├── icon-180.png            ← iOS home screen icon
+│       └── favicon-32.png          ← Browser tab favicon
+│
+├── screenshots/                    ← README screenshots (generated from mobile_mockup.html)
+│   ├── screen-1-2-login-overview.png
+│   ├── screen-3-4-transactions-add.png
+│   ├── screen-5-6-accounts-chat.png
+│   ├── screen-7-8-offline-savings.png
+│   └── mockup-full.png             ← Full page (all 8 screens combined)
 │
 ├── data/                           ← Sample CSV files (replace with your own)
 │   ├── transactions_sample-01.csv  ← Sample month 1
