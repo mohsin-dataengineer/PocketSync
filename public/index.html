@@ -1209,6 +1209,7 @@ Available actions: navigate (tab: overview/transactions/accounts/savings), filte
 
 const fmt    = new Intl.NumberFormat('en-US', { style: 'currency', currency: USER_CONFIG.currency, minimumFractionDigits: 0, maximumFractionDigits: 0 });
 const fmtDec = new Intl.NumberFormat('en-US', { style: 'currency', currency: USER_CONFIG.currency });
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ── State ─────────────────────────────────────────────────────────────────
 let TRANSACTIONS = [...ALL_TRANSACTIONS];
@@ -1526,13 +1527,22 @@ function removeFile(filename) {
 
 function renderChipsSynced() {
   if (FB_READY) return;
-  const html = loadedFiles.map(f => `
-    <div class="csv-chip">
-      <span>📄 ${f}</span>
-      <span class="remove" onclick="removeFile('${f}')">&times;</span>
-    </div>`).join('');
-  document.getElementById('csvChips').innerHTML = html;
-  document.getElementById('csvChips2').innerHTML = html;
+  ['csvChips', 'csvChips2'].forEach(id => {
+    const container = document.getElementById(id);
+    container.innerHTML = '';
+    loadedFiles.forEach(f => {
+      const chip = document.createElement('div');
+      chip.className = 'csv-chip';
+      const label = document.createElement('span');
+      label.textContent = '📄 ' + f;
+      const remove = document.createElement('span');
+      remove.className = 'remove';
+      remove.textContent = '×';
+      remove.addEventListener('click', () => removeFile(f));
+      chip.append(label, remove);
+      container.appendChild(chip);
+    });
+  });
 }
 
 // ── Filters ───────────────────────────────────────────────────────────────
@@ -1763,10 +1773,10 @@ function renderTable() {
     const amtSign  = t.type === 'income' ? '+' : '−';
     const safeId = CSS.escape(t.id);
     return `<tr id="txrow-${i}">
-      <td style="color:var(--muted);white-space:nowrap">${t.date}</td>
-      <td>${emoji} ${t.desc}</td>
-      <td style="white-space:nowrap">${t.category}</td>
-      <td style="color:var(--muted);white-space:nowrap">${t.account}</td>
+      <td style="color:var(--muted);white-space:nowrap">${esc(t.date)}</td>
+      <td>${emoji} ${esc(t.desc)}</td>
+      <td style="white-space:nowrap">${esc(t.category)}</td>
+      <td style="color:var(--muted);white-space:nowrap">${esc(t.account)}</td>
       <td><span class="badge badge-${t.type}">${t.type}</span></td>
       <td class="${amtClass}" style="text-align:right;white-space:nowrap">${amtSign}${fmtDec.format(Math.abs(t.amount))}</td>
       <td class="tx-actions-col">
@@ -2554,9 +2564,9 @@ function showPdfPreview() {
       const cls   = t.type === 'income' ? 'amount-pos' : 'amount-neg';
       const sign  = t.type === 'income' ? '+' : '−';
       return `<tr>
-        <td style="color:var(--muted);white-space:nowrap">${t.date}</td>
-        <td>${emoji} ${t.desc}</td>
-        <td style="color:var(--muted);font-size:0.75rem">${t.category}</td>
+        <td style="color:var(--muted);white-space:nowrap">${esc(t.date)}</td>
+        <td>${emoji} ${esc(t.desc)}</td>
+        <td style="color:var(--muted);font-size:0.75rem">${esc(t.category)}</td>
         <td class="${cls}" style="text-align:right;white-space:nowrap">${sign}${fmtDec.format(Math.abs(t.amount))}</td>
       </tr>`;
     }).join('');
