@@ -117,7 +117,39 @@
   }
   .btn-signin:hover { opacity: 0.9; transform: translateY(-1px); }
   .btn-signin:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-  #loginError { color: var(--red); font-size: 0.8rem; text-align: center; margin-top: 12px; min-height: 20px; }
+  #loginError {
+    font-size: 0.82rem;
+    text-align: center;
+    margin-top: 12px;
+    min-height: 20px;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  #loginError.error {
+    color: var(--red);
+    background: rgba(248,113,113,0.1);
+    border: 1px solid rgba(248,113,113,0.2);
+    padding: 10px 14px;
+  }
+  #loginError.success {
+    color: var(--green);
+    background: rgba(52,211,153,0.1);
+    border: 1px solid rgba(52,211,153,0.2);
+    padding: 10px 14px;
+  }
+  .forgot-link {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    transition: color 0.15s;
+  }
+  .forgot-link:hover { color: var(--accent); }
 
   /* ── App Shell ── */
   #appShell { display: flex; flex-direction: column; flex: 1; min-height: 100vh; }
@@ -873,6 +905,7 @@
     </div>
     <button class="btn-signin" id="signinBtn" onclick="signIn()">Sign In</button>
     <div id="loginError"></div>
+    <button class="forgot-link" onclick="resetPassword()">Forgot password?</button>
   </div>
 </div>
 
@@ -1353,20 +1386,56 @@ async function initApp() {
 initApp();
 
 // ── Auth ──────────────────────────────────────────────────────────────────
+function showLoginMsg(msg, type = 'error') {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.className = type;
+}
+
 async function signIn() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPassword').value;
-  const err   = document.getElementById('loginError');
   const btn   = document.getElementById('signinBtn');
-  err.textContent = '';
+
+  if (!email) { showLoginMsg('Please enter your email address.'); return; }
+  if (!pass)  { showLoginMsg('Please enter your password.'); return; }
+
+  showLoginMsg('', '');
   btn.disabled = true;
   btn.textContent = 'Signing in…';
   try {
     await auth.signInWithEmailAndPassword(email, pass);
   } catch (e) {
-    err.textContent = e.message.replace('Firebase: ', '').replace(/ \(auth\/.*\)/, '');
+    const msgs = {
+      'auth/invalid-credential':      'Incorrect email or password.',
+      'auth/wrong-password':          'Incorrect password. Please try again.',
+      'auth/user-not-found':          'No account found with this email.',
+      'auth/invalid-email':           'Please enter a valid email address.',
+      'auth/too-many-requests':       'Too many failed attempts. Try again later or reset your password.',
+      'auth/network-request-failed':  'Network error. Check your connection and try again.',
+      'auth/user-disabled':           'This account has been disabled.',
+    };
+    showLoginMsg(msgs[e.code] || 'Sign in failed. Please check your credentials.');
     btn.disabled = false;
     btn.textContent = 'Sign In';
+  }
+}
+
+async function resetPassword() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) {
+    showLoginMsg('Enter your email above, then tap "Forgot password?".');
+    return;
+  }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showLoginMsg('Reset link sent! Check your inbox.', 'success');
+  } catch (e) {
+    const msgs = {
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/invalid-email':  'Please enter a valid email address.',
+    };
+    showLoginMsg(msgs[e.code] || 'Could not send reset email. Try again.');
   }
 }
 
