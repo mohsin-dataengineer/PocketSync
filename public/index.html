@@ -1398,6 +1398,13 @@ async function initApp() {
     db   = firebase.firestore();
     auth = firebase.auth();
 
+    // Handle return from signInWithRedirect (Google SSO on mobile)
+    auth.getRedirectResult().catch(e => {
+      if (e.code && e.code !== 'auth/no-current-user') {
+        showLoginMsg('Google sign-in failed. Please try again.');
+      }
+    });
+
     auth.onAuthStateChanged(async user => {
       if (user) {
         // Reject accounts not in the household allowlist
@@ -1466,21 +1473,23 @@ function toggleForgotMode() {
 
 async function signInWithGoogle() {
   if (!FB_READY) return;
-  const btn = document.getElementById('googleBtn');
-  btn.disabled = true;
-  btn.childNodes[btn.childNodes.length - 1].textContent = ' Signing in…';
   showLoginMsg('', '');
   const provider = new firebase.auth.GoogleAuthProvider();
+  const isMobile = window.innerWidth < 769 || /iPhone|iPad|Android/i.test(navigator.userAgent);
   try {
-    await auth.signInWithPopup(provider);
+    if (isMobile) {
+      await auth.signInWithRedirect(provider);
+    } else {
+      await auth.signInWithPopup(provider);
+    }
   } catch (e) {
     if (e.code === 'auth/popup-blocked') {
       await auth.signInWithRedirect(provider);
+    } else if (e.code === 'auth/operation-not-allowed') {
+      showLoginMsg('Google sign-in is not enabled. Enable it in Firebase Console → Authentication → Sign-in method.');
     } else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
-      showLoginMsg('Google sign-in failed. Please try again.');
+      showLoginMsg('Google sign-in failed (' + (e.code || 'unknown') + '). Please try again.');
     }
-    btn.disabled = false;
-    btn.childNodes[btn.childNodes.length - 1].textContent = ' Sign in with Google';
   }
 }
 
