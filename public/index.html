@@ -1407,11 +1407,13 @@ async function initApp() {
 
     auth.onAuthStateChanged(async user => {
       if (user) {
+        console.log('Auth state: signed in as', user.email);
         // Reject accounts not in the household allowlist
         const allowed = USER_CONFIG.members.map(m => m.email.toLowerCase());
+        console.log('Allowed emails:', allowed);
         if (!allowed.includes(user.email.toLowerCase())) {
           await auth.signOut();
-          showLoginMsg(`${user.email} is not authorized for this household.`);
+          showLoginMsg(`"${user.email}" is not authorized. Allowed: ${allowed.join(', ')}`);
           return;
         }
         currentUser = user;
